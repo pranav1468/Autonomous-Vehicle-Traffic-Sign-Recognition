@@ -1,4 +1,4 @@
-# Use Python 3.10 slim image for better TensorFlow compatibility
+# Use Python 3.10 slim image
 FROM python:3.10-slim
 
 # Set working directory
@@ -8,14 +8,13 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies for OpenCV
+# Install system dependencies for OpenCV (updated for newer Debian)
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
-    libgomp1 \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -40,8 +39,5 @@ ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
 ENV STREAMLIT_SERVER_HEADLESS=true
 ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
-# Health check for container
-HEALTHCHECK CMD curl --fail http://localhost:7860/_stcore/health || exit 1
-
 # Run the Streamlit app
-CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0", "--server.fileWatcherType=none"]
+CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
